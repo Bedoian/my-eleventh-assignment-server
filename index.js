@@ -1,9 +1,9 @@
-const express=require('express')
-const { MongoClient, ServerApiVersion, ObjectId} = require('mongodb');
-const app=express()
+const express = require('express')
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
+const app = express()
 const port = process.env.PORT || 5000;
 require('dotenv').config();
-const cors=require('cors');
+const cors = require('cors');
 
 
 // middleware
@@ -27,25 +27,90 @@ async function run() {
   try {
 
     const itemCollection = client.db("FoodDB").collection("foods")
+    const purchaseCollection=client.db('FoodDB').collection('purchase')
 
-    app.post('/items',async(req,res)=>{
-        const newItem=req.body
-        const result=await itemCollection.insertOne(newItem)
-        res.send(result)
+    app.post('/items', async (req, res) => {
+      const newItem = req.body
+      const result = await itemCollection.insertOne(newItem)
+      res.send(result)
     })
 
-    app.get('/items',async(req,res)=>{
-        const result=await itemCollection.find().toArray()
-        res.send(result)
+    app.get('/items', async (req, res) => {
+      const result = await itemCollection.find().toArray()
+      res.send(result)
+    })
+    app.get('/items/:id', async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) }
+      const result = await itemCollection.findOne(query)
+      res.send(result)
     })
 
-    app.get('/items/:email',async(req,res)=>{
-    const email=req.params.email;
-    const query={'buyer.email':email}
-    const result=await itemCollection.find(query).toArray()
-    res.send(result)
+    app.get('/items/:email', async (req, res) => {
+      const email = req.params.email;
+      const query = { 'buyer.email': email }
+      const result = await itemCollection.find(query).toArray()
+      res.send(result)
     })
 
+    // post oparation of purchase collection
+
+    app.post('/myPurchase',async(req,res)=>{
+      const newPurchase=req.body
+      const result=await purchaseCollection.insertOne(newPurchase)
+      res.send(result)
+    })
+
+    // for email query
+    app.get('/myAddedItem',async(req,res)=>{
+      const result=await itemCollection.find().toArray()
+      res.send(result)
+    })
+    // single email query item 
+    app.get('/myAddedItem/:id',async(req,res)=>{
+      const id=req.params.id;
+      const query={_id:new ObjectId(id)}
+      const result=await itemCollection.findOne(query)
+      res.send(result)
+    })
+    // my added item
+    app.get('/myAdded/:email',async(req,res)=>{
+      const email=req.params.email
+      const query={'buyer.email':email}
+      const result=await itemCollection.find(query).toArray()
+      res.send(result)
+    })
+    // get added item by id
+
+// // update quantity of purchase collection
+//     app.put('/myPurchase/:id', async (req, res) => {
+//       const id = req.params.id;
+//       const quantity=req.body
+//       const query = { _id: new ObjectId(id) }
+//       const options = { upsert: true }
+//       const updateDoc={
+//         $set:{
+//           quantity:quantity.quantity
+//         },
+//       }
+//       const result=await purchaseCollection.updateOne(query,updateDoc,options)
+//       res.send(result)  
+//     })
+
+//     // updata quantity of itemCollection
+//     app.put('/quantity/:id',async(req,res)=>{
+//       const id=req.params.id;
+//       const quantity=req.body;
+//       const query={_id:new ObjectId(id)}
+//       const options={upsert:true}
+//       const updateDoc={
+//         $set:{
+//           quantity:quantity.quantity
+//         }
+//       }
+//       const result =await itemCollection.updateOne(query,updateDoc,options)
+//       res.send(result)
+//     })
     // Connect the client to the server	(optional starting in v4.7)
     // await client.connect();
     // Send a ping to confirm a successful connection
@@ -60,10 +125,10 @@ run().catch(console.dir);
 
 
 
-app.get('/',async(req,res)=>{
-    res.send('I am looking for a pizza')
+app.get('/', async (req, res) => {
+  res.send('I am looking for a pizza')
 })
 
-app.listen(port,()=>{
-    console.log(`my server is running on the port: ${port}`);
+app.listen(port, () => {
+  console.log(`my server is running on the port: ${port}`);
 })
