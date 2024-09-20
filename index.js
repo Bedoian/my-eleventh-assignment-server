@@ -111,13 +111,17 @@ async function run() {
       const result=await purchaseCollection.deleteOne(query)
       res.send(result)
     })
-
+    // post review
     app.post('/review',async(req,res)=>{
       const newReview=req.body;
       const result=await reviewCollection.insertOne(newReview)
       res.send(result)
     })
-
+    // get review
+    app.get('/review',async(req,res)=>{
+      const result=await reviewCollection.find().toArray()
+      res.send(result)
+    })
 
 
 
