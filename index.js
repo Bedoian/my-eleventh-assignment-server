@@ -80,37 +80,42 @@ async function run() {
       const result=await itemCollection.find(query).toArray()
       res.send(result)
     })
-    // get added item by id
+    //update added items
+    app.put('/myAddedItem/:id',async(req,res)=>{
+      const id=req.params.id;
+      const query={_id:new ObjectId(id)}
+      const options={upsert:true};
+      const itemData=req.body;
+      const updatedDoc={
+        $set:{
+          ...itemData
+        }
+      }
+      const result=await itemCollection.updateOne(query,updatedDoc,options)
+      res.send(result)
+    })
 
-// // update quantity of purchase collection
-//     app.put('/myPurchase/:id', async (req, res) => {
-//       const id = req.params.id;
-//       const quantity=req.body
-//       const query = { _id: new ObjectId(id) }
-//       const options = { upsert: true }
-//       const updateDoc={
-//         $set:{
-//           quantity:quantity.quantity
-//         },
-//       }
-//       const result=await purchaseCollection.updateOne(query,updateDoc,options)
-//       res.send(result)  
-//     })
+    // get purchase item depending on the email
+    app.get('/purchaseItem/:email',async(req,res)=>{
+      const email=req.params.email;
+      const query={'buyer.email':email}
+      const result=await purchaseCollection.find(query).toArray()
+      res.send(result)
+    })
 
-//     // updata quantity of itemCollection
-//     app.put('/quantity/:id',async(req,res)=>{
-//       const id=req.params.id;
-//       const quantity=req.body;
-//       const query={_id:new ObjectId(id)}
-//       const options={upsert:true}
-//       const updateDoc={
-//         $set:{
-//           quantity:quantity.quantity
-//         }
-//       }
-//       const result =await itemCollection.updateOne(query,updateDoc,options)
-//       res.send(result)
-//     })
+    // delete my purchase data
+    app.delete('/purchase/:id',async(req,res)=>{
+      const id=req.params.id
+      const query={_id:new ObjectId(id)}
+      const result=await purchaseCollection.deleteOne(query)
+      res.send(result)
+    })
+
+
+
+
+
+
     // Connect the client to the server	(optional starting in v4.7)
     // await client.connect();
     // Send a ping to confirm a successful connection
