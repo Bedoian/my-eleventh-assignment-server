@@ -28,6 +28,7 @@ async function run() {
 
     const itemCollection = client.db("FoodDB").collection("foods")
     const purchaseCollection=client.db('FoodDB').collection('purchase')
+    const reviewCollection=client.db('FoodDB').collection('review')
 
     app.post('/items', async (req, res) => {
       const newItem = req.body
@@ -108,6 +109,12 @@ async function run() {
       const id=req.params.id
       const query={_id:new ObjectId(id)}
       const result=await purchaseCollection.deleteOne(query)
+      res.send(result)
+    })
+
+    app.post('/review',async(req,res)=>{
+      const newReview=req.body;
+      const result=await reviewCollection.insertOne(newReview)
       res.send(result)
     })
 
