@@ -22,6 +22,22 @@ app.use(express.json())
 app.use(cors(corsOptions))
 app.use(cookieParser())
 
+// varify jwt middleware
+const varifyToken = (req, res, next) => {
+  const token = req.cookies?.token;
+  if (!token) return res.status(401).send({ message: 'unauthorized access' })
+  if (token) {
+    jwt.verify(token, process.env.SECRET_TOKEN_KEY, (err, decoded) => {
+      if (err) {
+        console.log(err)
+        return res.status(401).send({ message: 'unauthorized access' })
+      }
+      console.log(decoded)
+      req.user = decoded
+      next()
+    })
+  }
+}
 
 
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.jxt94sc.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0`;
@@ -119,7 +135,7 @@ async function run() {
     })
     // my added item
     app.get('/myAdded/:email', async (req, res) => {
-      const token=req.cookies.token
+      const token = req.cookies.token
       console.log('the token is', token);
       const email = req.params.email
       const query = { 'buyer.email': email }
