@@ -32,7 +32,7 @@ const varifyToken = (req, res, next) => {
         console.log(err)
         return res.status(401).send({ message: 'unauthorized access' })
       }
-      console.log(decoded)
+      // console.log(decoded)
       req.user = decoded
       next()
     })
@@ -134,10 +134,12 @@ async function run() {
       res.send(result)
     })
     // my added item
-    app.get('/myAdded/:email', async (req, res) => {
-      const token = req.cookies.token
-      console.log('the token is', token);
+    app.get('/myAdded/:email', varifyToken, async (req, res) => {
+      const tokenEmail = req.user.email
       const email = req.params.email
+      if (tokenEmail !== email) {
+        return res.status(403).send({ message: 'forbidden access' })
+      }
       const query = { 'buyer.email': email }
       const result = await itemCollection.find(query).toArray()
       res.send(result)
@@ -158,8 +160,12 @@ async function run() {
     })
 
     // get purchase item depending on the email
-    app.get('/purchaseItem/:email', async (req, res) => {
+    app.get('/purchaseItem/:email',varifyToken, async (req, res) => {
+      const tokenEmail = req.user.email
       const email = req.params.email;
+      if (tokenEmail !== email) {
+        return res.status(403).send({ message: 'forbidden access' })
+      }
       const query = { 'buyer.email': email }
       const result = await purchaseCollection.find(query).toArray()
       res.send(result)
