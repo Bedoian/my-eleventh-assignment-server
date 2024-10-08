@@ -95,16 +95,25 @@ async function run() {
       res.send(result)
     })
     // get all page item
-    app.get('/items', async (req, res) => {
-      const result = await itemCollection.find().toArray()
+    app.get('/all-items', async (req, res) => {
+      const size=parseInt(req.query.size)
+      const page=parseInt(req.query.page)-1
+      const filter=req.query.filter
+      console.log(filter);
+      const result = await itemCollection
+      .find()
+      .skip(page*size)
+      .limit(size)
+      .toArray()
       res.send(result)
+
     })
     // get all page count
-    app.get('/items', async (req, res) => {
-      const result = await itemCollection.find().toArray()
-      res.send(result)
+    app.get('/items-count', async (req, res) => {
+      const count = await itemCollection.countDocuments()
+      res.send({ count })
     })
-    
+
     app.get('/items/:id', async (req, res) => {
       const id = req.params.id;
       const query = { _id: new ObjectId(id) }
