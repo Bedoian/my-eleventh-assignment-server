@@ -12,7 +12,7 @@ const corsOptions = {
   origin: [
     'http://localhost:5173',
     'http://localhost:5174',
-    'https://my-eleventh-assignment-c2ba2.web.app',
+    'https://my-eleventh-assignment-c2ba2.web.app'
   ],
   credentials: true,
   optionSuccessStatus: 200,
@@ -94,11 +94,17 @@ async function run() {
       const result = await itemCollection.insertOne(newItem)
       res.send(result)
     })
-
+    // get all page item
     app.get('/items', async (req, res) => {
       const result = await itemCollection.find().toArray()
       res.send(result)
     })
+    // get all page count
+    app.get('/items', async (req, res) => {
+      const result = await itemCollection.find().toArray()
+      res.send(result)
+    })
+    
     app.get('/items/:id', async (req, res) => {
       const id = req.params.id;
       const query = { _id: new ObjectId(id) }
@@ -160,12 +166,8 @@ async function run() {
     })
 
     // get purchase item depending on the email
-    app.get('/purchaseItem/:email',varifyToken, async (req, res) => {
-      const tokenEmail = req.user.email
+    app.get('/purchaseItem/:email', async (req, res) => {
       const email = req.params.email;
-      if (tokenEmail !== email) {
-        return res.status(403).send({ message: 'forbidden access' })
-      }
       const query = { 'buyer.email': email }
       const result = await purchaseCollection.find(query).toArray()
       res.send(result)
