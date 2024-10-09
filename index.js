@@ -100,8 +100,10 @@ async function run() {
       const page = parseInt(req.query.page) - 1
       const filter = req.query.filter;
       const sort = req.query.sort
-      console.log(sort);
-      let query = {}
+      const search = req.query.search;
+      let query = {
+        // name: { $regex: {}, $options: 'i' }
+      }
       if (filter) query = { category: filter }
       let options = {}
       if (sort) options = {
@@ -120,13 +122,16 @@ async function run() {
     // get all page count
     app.get('/items-count', async (req, res) => {
       const filter = req.query.filter;
-      let query = {}
+      const search = req.query.search;
+      let query = {
+        // name: { $regex: search, $options: 'i' }
+      }
       if (filter) query = { category: filter }
       const count = await itemCollection.countDocuments(query)
       res.send({ count })
     })
 
-    app.get('/items/:id', async (req, res) => {
+    app.get('/items/:id', async (req, res) => { 
       const id = req.params.id;
       const query = { _id: new ObjectId(id) }
       const result = await itemCollection.findOne(query)
