@@ -96,21 +96,33 @@ async function run() {
     })
     // get all page item
     app.get('/all-items', async (req, res) => {
-      const size=parseInt(req.query.size)
-      const page=parseInt(req.query.page)-1
-      const filter=req.query.filter
-      console.log(filter);
+      const size = parseInt(req.query.size)
+      const page = parseInt(req.query.page) - 1
+      const filter = req.query.filter;
+      const sort = req.query.sort
+      console.log(sort);
+      let query = {}
+      if (filter) query = { category: filter }
+      let options = {}
+      if (sort) options = {
+        sort: {
+          price: sort === 'asc' ? 1 : -1
+        }
+      }
       const result = await itemCollection
-      .find()
-      .skip(page*size)
-      .limit(size)
-      .toArray()
+        .find(query, options)
+        .skip(page * size)
+        .limit(size)
+        .toArray()
       res.send(result)
 
     })
     // get all page count
     app.get('/items-count', async (req, res) => {
-      const count = await itemCollection.countDocuments()
+      const filter = req.query.filter;
+      let query = {}
+      if (filter) query = { category: filter }
+      const count = await itemCollection.countDocuments(query)
       res.send({ count })
     })
 
