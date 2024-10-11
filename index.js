@@ -53,9 +53,6 @@ const client = new MongoClient(uri, {
 
 async function run() {
   try {
-
-
-
     const itemCollection = client.db("FoodDB").collection("foods")
     const purchaseCollection = client.db('FoodDB').collection('purchase')
     const reviewCollection = client.db('FoodDB').collection('review')
