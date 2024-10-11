@@ -122,7 +122,7 @@ async function run() {
     // get all page count
     app.get('/items-count', async (req, res) => {
       const filter = req.query.filter;
-      const search = req.query.search;
+      // const search = req.query.search;
       let query = {
         // name: { $regex: search, $options: 'i' }
       }
